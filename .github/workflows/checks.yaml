@@ -1,0 +1,45 @@
+name: CI Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci_checks:
+    strategy:
+      matrix:
+        options:
+          - make_command: cpplint
+          - make_command: cppcheck
+          - make_command: all test install ARGS=-v
+            cmake_extra_vars: -DBOOST_STATIC=ON
+          - make_command: all test install ARGS=-v
+            cmake_extra_vars: -DLEATHERMAN_SHARED=ON
+          - make_command: all test install ARGS=-v
+            cmake_extra_vars: -DCMAKE_BUILD_TYPE=Debug -DCOVERALLS=ON
+            coveralls: ON
+          - make_command: all test install ARGS=-v
+            cmake_extra_vars: -DLEATHERMAN_USE_LOCALES=OFF
+          - make_command: all test install ARGS=-v
+            cmake_extra_vars: -DLEATHERMAN_GETTEXT=OFF
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current PR
+        uses: actions/checkout@v3
+      - name: Pull Docker image
+        run: docker pull gcr.io/cpp-projects/cpp-ci:1
+      - name: Run make
+        run: |
+          docker run -v `pwd`:/leatherman gcr.io/cpp-projects/cpp-ci:1 /bin/bash -c "
+          cd /leatherman &&
+          rm locales/leatherman.pot &&
+          cmake {{ matrix.options.cmake_extra_vars }} . &&
+          mkdir dest &&
+          make ${{ matrix.options.make_command }} DESTDIR=/leatherman/dest -j2 &&
+          { [[ '${{ matrix.options.coveralls }}' == 'ON' ]] && coveralls --gcov-options '\-lp' -r . -b . -e src -e vendor >/dev/null || true; }
+          "
