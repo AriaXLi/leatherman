@@ -28,7 +28,7 @@ jobs:
       - name: checkout current pr
         uses: actions/checkout@v3
       - name: docker pull and make
-        run: ./.github/actions/docker_pull_and_make
+        uses: ./.github/actions/docker_pull_and_make
         with:
           cmake_extra_vars: ${{ matrix.options.cmake_extra_vars }}
           make_command: ${{ matrix.options.make_command }}
