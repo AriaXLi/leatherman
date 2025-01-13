@@ -1,5 +1,7 @@
 # Leatherman - a C++ toolkit
 
+This repository is archived and Perforce will no longer be updating this repository. For more information, see [this Puppet blog post](https://www.puppet.com/blog/open-source-puppet-updates-2025).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
